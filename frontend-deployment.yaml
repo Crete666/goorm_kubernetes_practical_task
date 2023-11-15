@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: choijihyeok-frontend
+  namespace: ingress-nginx
+  labels:
+    app: webserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webserver
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: webserver
+        tier: frontend
+    spec:
+      containers:
+      - image: choijihyeok/docker-frontend
+        name: frontend
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: ingress-nginx
+  labels:
+    app: webserver
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app: webserver
+    tier: frontend
+  type: ClusterIP

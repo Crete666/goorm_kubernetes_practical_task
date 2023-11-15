@@ -1,0 +1,9 @@
+secretGenerator:
+- name: mysql-pass
+  namespace: ingress-nginx
+  literals:
+  - password=choijihyeok
+resources:
+- mysql-deployment.yaml
+- frontend-deployment.yaml
+- backend-deployment.yaml

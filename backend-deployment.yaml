@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: choijihyeok-backend
+  namespace: ingress-nginx
+  labels:
+    app: webserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webserver
+      tier: backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: webserver
+        tier: backend
+    spec:
+      containers:
+      - image: choijihyeok/docker-backend
+        name: webserver-backend
+        env:
+        - name: MYSQL_HOST
+          value: webserver-mysql
+        - name: MYSQL_USER
+          value: root
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        - name: MYSQL_DATABASE
+          value: myapp
+        ports:
+        - containerPort: 5000
+          protocol: TCP
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: ingress-nginx
+  labels:
+    app: webserver
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: webserver
+    tier: backend
